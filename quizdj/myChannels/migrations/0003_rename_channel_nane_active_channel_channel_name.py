@@ -6,7 +6,7 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('chat', '0002_rename_channel_layer_active_channel_channel_nane'),
+        ('myChannels', '0002_rename_channel_layer_active_channel_channel_nane'),
     ]
 
     operations = [
