@@ -22,5 +22,5 @@ class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
         # token['iat'] = datetime.datetime.now()
         token['user'] = user.username
         token['date'] = str(datetime.date.today())
-
+        token['role'] = user.role
         return token        

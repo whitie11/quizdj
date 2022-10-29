@@ -9,8 +9,8 @@ from .consumers import playersComsumer
 #     re_path(r'ws/chat/(?P<room_name>\w+)/$', consumers.ChatConsumer.as_asgi()),
 # ]
 websocket_urlpatterns = [
-                path("quiz/", playersComsumer.QuizConsumer.as_asgi()),
-                path("quizmaster/", qMconsumer.QMConsumer.as_asgi()),
-                re_path(r'ws/quiz/(?P<quiz_name>\w+)/$', playersComsumer.QuizConsumer.as_asgi()),
+                path("ws/quiz/", playersComsumer.QuizConsumer.as_asgi()),
+                path("ws/quizmaster/", qMconsumer.QMConsumer.as_asgi()),
+                # re_path(r'ws/quiz/(?P<quiz_name>\w+)/$', playersComsumer.QuizConsumer.as_asgi()),
                 # path("chat/", PublicChatConsumer.as_asgi()),
 ]

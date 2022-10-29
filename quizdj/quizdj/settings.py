@@ -27,7 +27,7 @@ SECRET_KEY = 'django-insecure-9(7mfwp89$rc3r=6#d1pq)@7rr$h@@ew(yj_c7xs3+cz(0ddwr
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'quizical.whiteapp.duckdns.org', 'localhost:4200']
+ALLOWED_HOSTS = ['192.168.1.158','192.168.1.228','localhost', '127.0.0.1', 'quizicalserver.duckdns.org', 'localhost:4200']
 
 CORS_ORIGIN_ALLOW_ALL = True
 
@@ -40,7 +40,7 @@ CORS_ORIGIN_WHITELIST = (
 'http://localhost:4200',  
 'http://192.168.1.223:8000',# for network
 'http://walingo.duckdns.org',
-'ws://127.0.0.1:8000' 
+'ws://127.0.0.1:8000',
 )
 
 # Application definition
@@ -60,6 +60,7 @@ INSTALLED_APPS = [
     
     'quizusr',
     'myChannels',
+    'quizAdmin',
 
 ]
 
@@ -120,7 +121,7 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'quizdj.wsgi.application'
-
+ASGI_APPLICATION = 'quizdj.asgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/4.0/ref/settings/#databases
@@ -204,4 +205,3 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'static/')
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-ASGI_APPLICATION = 'quizdj.asgi.application'

@@ -55,14 +55,47 @@ class QMConsumer(AsyncWebsocketConsumer):
                     'type': 'question',
                     'subject': data['subject'],
                     'ID': data['ID'],
+                    'group': data['group'],
+                    'question_num': data['question_num'],
                     'text': data['text'],
                     'answerA': data['answerA'],
                     'answerB': data['answerB'],
                     'answerC': data['answerC'],
                     'answerD': data['answerD'],
-                    'time': data['time'],
+                    'duration': data['duration'],
+                    'startTime': data['startTime'],
                 }
             )
+        elif data['subject'] == 'message' and data['type'] == 'ind_message':
+            # chat message to individual player
+            print('individual message = ')
+            await self.channel_layer.send(
+                data['reciever'],
+                {
+                    'type': 'ind_message',
+                    'content': data['content'],
+                    'source': data['source'],
+                    'subject': 'message',
+                    'reciever': data['reciever']
+
+                }
+            )
+            
+        elif data['subject'] == 'message' and data['type'] == 'chat_message':
+            # chat message to individual player
+            print('individual message = ')
+            await self.channel_layer.group_send(
+                'quiz_lobby',
+                {
+                    'type': 'chat_message',
+                    'content': data['content'],
+                    'source': data['source'],
+                    'subject': 'message',
+                    'reciever': data['reciever']
+
+                }
+            )
+
         elif data['subject'] == 'timer':
             await self.channel_layer.group_send(
                 'quiz_lobby',
@@ -89,8 +122,10 @@ class QMConsumer(AsyncWebsocketConsumer):
             'type': event['type'],
             'subject': event['subject'],
             'source': event['source'],
+            'userID': event['userID'],
             'answer': event['answer'],
-            'question_no': event['question_no'],
+            'question_ID': event['question_ID'],
+            'question_num': event['question_num'],
             'timeSpent': event['timeSpent']
         })
         )

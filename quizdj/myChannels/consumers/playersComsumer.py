@@ -13,9 +13,10 @@ from ..models import Active_Channel, Active_ChannelSerializer
 
 class QuizConsumer(AsyncWebsocketConsumer):
     @database_sync_to_async
-    def save_active_channel(self, username, channel_name, room_group_name,):
+    def save_active_channel(self, username, userID, channel_name, room_group_name,):
         new_channel = Active_Channel.objects.create(
             username=username,
+            userID = userID,
             channel_name=channel_name,
             quiz_group_name=room_group_name,
             lastSeen=datetime.datetime.now()
@@ -33,7 +34,7 @@ class QuizConsumer(AsyncWebsocketConsumer):
         try:
             obj: Active_Channel = Active_Channel.objects.get(
                 channel_name=channel_name)
-            if obj:    
+            if obj:
                 obj.lastSeen = datetime.datetime.now()
                 obj.save()
         except:
@@ -47,6 +48,8 @@ class QuizConsumer(AsyncWebsocketConsumer):
         self.username = parse_qs(self.scope["query_string"].decode("utf8"))[
             "username"][0]
         # print(token)
+        self.userID = parse_qs(self.scope["query_string"].decode("utf8"))[
+            "userID"][0]
         self.room_name = parse_qs(self.scope["query_string"].decode("utf8"))[
             "room_name"][0]
         # print(self.quiz_name )
@@ -61,14 +64,14 @@ class QuizConsumer(AsyncWebsocketConsumer):
             self.channel_name
         )
 
-        await self.save_active_channel(self.username, self.channel_name,  self.room_group_name)
+        await self.save_active_channel(self.username, self.userID, self.channel_name,  self.room_group_name)
 
         await self.accept()
         await self.channel_layer.group_send(
             'quiz_lobby1',
-            {   'type': 'playersList',
+            {'type': 'playersList',
                 'subject': 'getPlayers',
-            }
+             }
         )
 
     async def disconnect(self, close_code):
@@ -90,7 +93,7 @@ class QuizConsumer(AsyncWebsocketConsumer):
     # Receive message from WebSocket /player
     async def receive(self, text_data):
         text_data_json = json.loads(text_data)
-        # print(text_data_json)
+        print('message recieved player consumer')
         # message = text_data_json['content']
         print(text_data_json['type'])
         print(self.username)
@@ -98,14 +101,15 @@ class QuizConsumer(AsyncWebsocketConsumer):
             await self.setHandshake(self.channel_name)
 
         elif text_data_json['subject'] == 'message' and text_data_json['type'] == 'chat_message':
-            # chat message to all players
+            print('chat message to all players')
             await self.channel_layer.group_send(
-                self.room_group_name,
+                'quiz_lobby',
                 {
                     'type': 'chat_message',
                     'content': text_data_json['content'],
                     'source': text_data_json['source'],
                     'subject': 'message',
+                    'reciever': text_data_json['reciever']
                 }
             )
         elif text_data_json['subject'] == 'answer' and text_data_json['type'] == 'answer':
@@ -117,22 +121,23 @@ class QuizConsumer(AsyncWebsocketConsumer):
                     'type': text_data_json['type'],
                     'subject': text_data_json['subject'],
                     'source': text_data_json['source'],
+                    'userID': text_data_json['userID'],
                     'answer': text_data_json['answer'],
-                    'question_no': text_data_json['question_no'],
+                    'question_ID': text_data_json['question_ID'],
+                    'question_num': text_data_json['question_num'],
                     'timeSpent': text_data_json['timeSpent']
                 }
             )
-
             print('echoing back')
             # echo back
             # timeStr = datetime.datetime.fromtimestamp(text_data_json['timeSpent'])
-            msg = "You answered question {} with answer {} in {} seconds!".format(
-                text_data_json['question_no'],
+            msg = "You answered question {} with answer {} after {} seconds!".format(
+                text_data_json['question_num'],
                 text_data_json['answer'],
                 text_data_json['timeSpent'],
             )
             await self.send(text_data=json.dumps({
-                'type': 'chat_message',
+                'type': 'ind_message',
                 'subject': 'message',
                 'content': msg,
                 'source': 'server',
@@ -140,11 +145,24 @@ class QuizConsumer(AsyncWebsocketConsumer):
 
     async def chat_message(self, event):
         # Send message to WebSocket
+        await self.send(text_data=json.dumps(
+            {
+                'type': event['type'],
+                'subject': event['subject'],
+                'source': event['source'],
+                'content': event['content'],
+                'reciever': event['reciever']
+            }
+        ))
+
+    async def ind_message(self, event):
+        # Send message to WebSocket
         await self.send(text_data=json.dumps({
             'type': event['type'],
             'subject': event['subject'],
             'source': event['source'],
-            'content': event['content']
+            'content': event['content'],
+            'reciever': event['reciever']
         }))
 
     async def question(self, event):
@@ -154,12 +172,15 @@ class QuizConsumer(AsyncWebsocketConsumer):
                 'type': 'question',
                 'subject': event['subject'],
                 'ID': event['ID'],
+                'group': event['group'],
+                'question_num': event['question_num'],
                 'text': event['text'],
                 'answerA': event['answerA'],
                 'answerB': event['answerB'],
                 'answerC': event['answerC'],
                 'answerD': event['answerD'],
-                'time': event['time'],
+                'duration': event['duration'],
+                'startTime': event['startTime']
             }
         ))
 

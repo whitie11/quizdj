@@ -5,7 +5,7 @@ from django.contrib.auth.models import User
 # Create your models here.
 class QuizUser(AbstractUser):
     
-    ROLE_CHOICE = [('Admin', 'Admin User'),
+    ROLE_CHOICE = [('Admin', 'Admin User'), ('Quizmaster', 'Quizmaster'),
                    ('StdUser', 'Standard User'), ('Guest', 'Guest')]
 
     bio = models.TextField(max_length=500, blank=True)
