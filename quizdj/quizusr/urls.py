@@ -13,4 +13,5 @@ urlpatterns = [
     path('token/refresh/', QUV.TokenRefreshView.as_view(), name='token_refresh'),
     path('token/verify/', QUV.TokenVerifyView.as_view(), name='token_verify'),
     path('getUser/', QUV.QuizUser.as_view(), name='get_user_s'  ),
+     path('register/', QUV.RegisterView.as_view(), name='auth_register'),
 ]

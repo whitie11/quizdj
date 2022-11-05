@@ -27,7 +27,7 @@ SECRET_KEY = 'django-insecure-9(7mfwp89$rc3r=6#d1pq)@7rr$h@@ew(yj_c7xs3+cz(0ddwr
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['192.168.1.158','192.168.1.228','localhost', '127.0.0.1', 'quizicalserver.duckdns.org', 'localhost:4200']
+ALLOWED_HOSTS = ['192.168.1.158','192.168.1.228','localhost', '127.0.0.1', 'quizicalserver.duckdns.org', 'localhost:4200', 'waquiz.duckdns.org']
 
 CORS_ORIGIN_ALLOW_ALL = True
 

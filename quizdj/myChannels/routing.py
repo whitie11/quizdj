@@ -13,4 +13,5 @@ websocket_urlpatterns = [
                 path("ws/quizmaster/", qMconsumer.QMConsumer.as_asgi()),
                 # re_path(r'ws/quiz/(?P<quiz_name>\w+)/$', playersComsumer.QuizConsumer.as_asgi()),
                 # path("chat/", PublicChatConsumer.as_asgi()),
+            
 ]

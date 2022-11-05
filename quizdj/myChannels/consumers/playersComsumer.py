@@ -58,6 +58,7 @@ class QuizConsumer(AsyncWebsocketConsumer):
 
         # TODO check if user already connected
 
+
         # Join room group
         await self.channel_layer.group_add(
             self.room_group_name,
@@ -112,6 +113,16 @@ class QuizConsumer(AsyncWebsocketConsumer):
                     'reciever': text_data_json['reciever']
                 }
             )
+        # elif text_data_json['subject'] == 'message' and text_data_json['type'] == 'leaderboard':
+        #     print('leaderboard msg recieved ')
+        #     await self.channel_layer.group_send(
+        #         'quiz_lobby',
+        #         {
+        #             'type': 'leaderboard',
+        #             'subject': 'leaderboard',
+        #             'leaderboard': text_data_json['leaderboard']
+        #         }
+        #     )
         elif text_data_json['subject'] == 'answer' and text_data_json['type'] == 'answer':
             # send to QM
             print('sending to QM')
@@ -183,6 +194,18 @@ class QuizConsumer(AsyncWebsocketConsumer):
                 'startTime': event['startTime']
             }
         ))
+
+    async def leaderboard(self, event):
+        # send leaderboard to all players
+        await self.send(text_data=json.dumps(
+            {
+                'type': 'message',
+                'subject': event['subject'],
+                'leaderboard': event['leaderboard']
+            }
+        ))
+
+
 
     async def timer(self, event):
         await self.send(text_data=json.dumps(

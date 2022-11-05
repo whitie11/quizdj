@@ -82,7 +82,6 @@ class QMConsumer(AsyncWebsocketConsumer):
             )
             
         elif data['subject'] == 'message' and data['type'] == 'chat_message':
-            # chat message to individual player
             print('individual message = ')
             await self.channel_layer.group_send(
                 'quiz_lobby',
@@ -95,6 +94,16 @@ class QMConsumer(AsyncWebsocketConsumer):
 
                 }
             )
+        elif data['subject'] == 'message' and data['type'] == 'leaderboard':
+            print('leaderboard msg recieved ')
+            await self.channel_layer.group_send(
+                'quiz_lobby',
+                {
+                    'type': 'leaderboard',
+                    'subject': 'leaderboard',
+                    'leaderboard': data['leaderboard']
+                }
+            )
 
         elif data['subject'] == 'timer':
             await self.channel_layer.group_send(
@@ -105,6 +114,7 @@ class QMConsumer(AsyncWebsocketConsumer):
                     'value': data['value']
                 }
             )
+
         elif data['subject'] == 'getPlayers':
             await self.purgeACdata()
             self.p = await self.getPlayers()
@@ -114,6 +124,24 @@ class QMConsumer(AsyncWebsocketConsumer):
                     'playersList': self.p
                 }
             ))
+
+
+
+    async def playersList(self, event):
+        # Send players to QM
+        print(event)
+        await self.purgeACdata()
+        self.p = await self.getPlayers()
+        await self.send(text_data=json.dumps({
+            'type': 'playersList',
+            'subject': 'playersList',
+            'playersList': self.p
+        })
+        )
+
+
+
+
 
     async def answer(self, event):
         # Send answer recieved from player to QM
@@ -130,14 +158,4 @@ class QMConsumer(AsyncWebsocketConsumer):
         })
         )
 
-    async def playersList(self, event):
-        # Send players to QM
-        print(event)
-        await self.purgeACdata()
-        self.p = await self.getPlayers()
-        await self.send(text_data=json.dumps({
-            'type': 'playersList',
-            'subject': 'playersList',
-            'playersList': self.p
-        })
-        )
+
